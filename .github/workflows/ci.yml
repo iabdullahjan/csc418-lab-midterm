@@ -43,6 +43,8 @@ jobs:
       # Bonus: only runs when the REPORT_EMAIL repository variable is set
       - name: Email test report
         if: always() && vars.REPORT_EMAIL != ''
+        # A mail problem should not change the test result of the run
+        continue-on-error: true
         uses: dawidd6/action-send-mail@v23
         with:
           server_address: smtp.gmail.com

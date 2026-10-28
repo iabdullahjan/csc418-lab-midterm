@@ -12,6 +12,13 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v7
 
+      # The plain "python" command on this PC is a broken Store shortcut,
+      # so put the real Python install first on the PATH
+      - name: Use local Python
+        run: |
+          $py = Join-Path $env:LOCALAPPDATA 'Python\bin'
+          if (Test-Path $py) { Add-Content -Path $env:GITHUB_PATH -Value $py }
+
       - name: Install dependencies
         run: python -m pip install -r requirements.txt
 

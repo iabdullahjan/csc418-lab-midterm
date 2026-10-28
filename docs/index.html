@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+<head><title>Assignment Submission Portal (Demo)</title></head>
+<body>
+<h1>Assignment Submission Portal (static demo)</h1>
+<p>This is the static version of the portal for GitHub Pages. Submissions are saved in your browser.</p>
+<p id="msg"></p>
+<form id="f">
+  <p>Name: <input id="name"></p>
+  <p>Registration No: <input id="reg_no"></p>
+  <p>Assignment Title: <input id="title"></p>
+  <p>Submission URL: <input id="url"></p>
+  <button>Submit</button>
+</form>
+<h2>Saved Submissions</h2>
+<table border="1" id="list"><tr><th>Name</th><th>Reg No</th><th>Title</th><th>URL</th></tr></table>
+<script>
+const FIELDS = [["name", "Name"], ["reg_no", "Registration number"],
+                ["title", "Assignment title"], ["url", "Submission URL"]];
+const load = () => JSON.parse(localStorage.getItem("submissions") || "[]");
+function validUrl(u) {
+  try { const p = new URL(u); return ["http:", "https:"].includes(p.protocol) && p.hostname.includes("."); }
+  catch { return false; }
+}
+function show() {
+  const t = document.getElementById("list");
+  t.querySelectorAll("tr.row").forEach(r => r.remove());
+  for (const s of load()) {
+    const tr = t.insertRow(); tr.className = "row";
+    for (const [k] of FIELDS) tr.insertCell().textContent = s[k];
+  }
+}
+document.getElementById("f").onsubmit = e => {
+  e.preventDefault();
+  const s = {}, errors = [];
+  for (const [k, label] of FIELDS) {
+    s[k] = document.getElementById(k).value.trim();
+    if (!s[k]) errors.push(label + " is required");
+  }
+  if (s.url && !validUrl(s.url)) errors.push("Submission URL is not valid");
+  const msg = document.getElementById("msg");
+  if (errors.length) { msg.style.color = "red"; msg.textContent = errors.join(", "); return; }
+  localStorage.setItem("submissions", JSON.stringify([...load(), s]));
+  msg.style.color = "green"; msg.textContent = "Submission saved"; e.target.reset(); show();
+};
+show();
+</script>
+</body>
+</html>

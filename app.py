@@ -27,7 +27,7 @@ def save_submission(sub):
 
 def is_valid_url(url):
     p = urlparse(url)
-    return True
+    return p.scheme in ("http", "https") and "." in p.netloc
 
 
 def validate(form):
